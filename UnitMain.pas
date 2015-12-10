@@ -4,7 +4,8 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls, PngImage, Math, Vcl.GraphUtil;
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls, PngImage, Math, Vcl.GraphUtil,
+  ShellAPI;
 
 type
   TFormMain = class(TForm)
@@ -26,6 +27,8 @@ type
     procedure ImageMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure FormResize(Sender: TObject);
+    procedure WMDROPFILES(var Message: TWMDROPFILES); message WM_DROPFILES;
+    procedure LoadImage(FileName: TFileName);
   private
     { Private declarations }
     Bitmap: TBitmap;
@@ -43,12 +46,30 @@ implementation
 
 {$R *.dfm}
 
+procedure TFormMain.WMDROPFILES(var Message: TWMDROPFILES);
+var
+  Index: Integer;
+  Buffer: Array[0..255] of WideChar;
+begin
+  Index := DragQueryFile(Message.Drop, $FFFFFFFF, nil, 0);
+  for Index := 0 to Max(1, Index - 1) do begin
+    DragQueryFile(Message.Drop, Index, Buffer, SizeOf(Buffer));
+    LoadImage(Buffer);
+  end;  
+  DragFinish(Message.Drop);
+end;
+
 procedure TFormMain.ButtonLoadClick(Sender: TObject);
 begin
   if FileOpenDialog.Execute then begin
-    Image.Picture.RegisterFileFormat('png', 'Portable Network Graphics', TPngImage);
+    LoadImage(FileOpenDialog.FileName);
+  end;
+end;
+
+procedure TFormMain.LoadImage(FileName: TFileName);
+begin
     try
-      Image.Picture.LoadFromFile(FileOpenDialog.FileName);
+      Image.Picture.LoadFromFile(FileName);
 
       Bitmap.Width := Image.Picture.Width;
       Bitmap.Height := Image.Picture.Height;
@@ -58,13 +79,14 @@ begin
     finally
 
     end;
-  end;
 end;
 
 procedure TFormMain.FormCreate(Sender: TObject);
 begin
+  Image.Picture.RegisterFileFormat('png', 'Portable Network Graphics', TPngImage);
   Bitmap := TBitmap.Create;
   Bitmap.PixelFormat := pf24bit;
+  DragAcceptFiles(Handle, True);
 end;
 
 procedure TFormMain.FormDestroy(Sender: TObject);
@@ -96,6 +118,7 @@ var
   Color: Integer;
 begin
   if not Assigned(Image.Picture.Graphic) then Exit;
+  if (X > Image.Picture.Width) or (Y > Image.Picture.Height) then Exit;
   Moving := True;
   Image.Cursor := crHandPoint;
   LastX := X;
