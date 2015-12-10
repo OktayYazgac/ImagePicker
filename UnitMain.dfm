@@ -1,10 +1,12 @@
-object Form1: TForm1
+object FormMain: TFormMain
   Left = 0
   Top = 0
   Caption = 'Image Viewer'
-  ClientHeight = 511
-  ClientWidth = 885
+  ClientHeight = 512
+  ClientWidth = 884
   Color = clBtnFace
+  Constraints.MinHeight = 550
+  Constraints.MinWidth = 900
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
@@ -14,13 +16,14 @@ object Form1: TForm1
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnDragDrop = FormDragDrop
+  OnResize = FormResize
   PixelsPerInch = 96
   TextHeight = 13
   object Image: TImage
     Left = 8
     Top = 8
-    Width = 873
-    Height = 464
+    Width = 870
+    Height = 465
     Cursor = crCross
     OnMouseDown = ImageMouseDown
     OnMouseLeave = ImageMouseLeave
@@ -34,7 +37,7 @@ object Form1: TForm1
   end
   object LabeledEditX: TLabeledEdit
     Left = 65
-    Top = 482
+    Top = 480
     Width = 121
     Height = 21
     EditLabel.Width = 6
@@ -58,7 +61,7 @@ object Form1: TForm1
   end
   object LabeledEditColor: TLabeledEdit
     Left = 343
-    Top = 482
+    Top = 480
     Width = 113
     Height = 21
     EditLabel.Width = 7
@@ -70,7 +73,7 @@ object Form1: TForm1
   end
   object MemoJSON: TMemo
     Left = 552
-    Top = 478
+    Top = 480
     Width = 191
     Height = 25
     ReadOnly = True
@@ -78,7 +81,7 @@ object Form1: TForm1
   end
   object ButtonLoad: TButton
     Left = 802
-    Top = 478
+    Top = 480
     Width = 75
     Height = 25
     Caption = '&Open'

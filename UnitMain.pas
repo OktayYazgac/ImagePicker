@@ -7,7 +7,7 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls, PngImage, Math, Vcl.GraphUtil;
 
 type
-  TForm1 = class(TForm)
+  TFormMain = class(TForm)
     Image: TImage;
     FileOpenDialog: TFileOpenDialog;
     LabeledEditX: TLabeledEdit;
@@ -25,6 +25,7 @@ type
     procedure ImageMouseLeave(Sender: TObject);
     procedure ImageMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
+    procedure FormResize(Sender: TObject);
   private
     { Private declarations }
     Bitmap: TBitmap;
@@ -36,13 +37,13 @@ type
   end;
 
 var
-  Form1: TForm1;
+  FormMain: TFormMain;
 
 implementation
 
 {$R *.dfm}
 
-procedure TForm1.ButtonLoadClick(Sender: TObject);
+procedure TFormMain.ButtonLoadClick(Sender: TObject);
 begin
   if FileOpenDialog.Execute then begin
     Image.Picture.RegisterFileFormat('png', 'Portable Network Graphics', TPngImage);
@@ -54,31 +55,41 @@ begin
       Bitmap.Assign(Image.Picture.Graphic);
       OffsetX := 0;
       OffsetY := 0;
-      MemoJSON.Lines.Add(Format('Container %uX%u', [Image.Width, Image.Height]));
-      MemoJSON.Lines.Add(Format('Image %uX%u', [Bitmap.Width, Bitmap.Height]));
     finally
 
     end;
   end;
 end;
 
-procedure TForm1.FormCreate(Sender: TObject);
+procedure TFormMain.FormCreate(Sender: TObject);
 begin
   Bitmap := TBitmap.Create;
   Bitmap.PixelFormat := pf24bit;
 end;
 
-procedure TForm1.FormDestroy(Sender: TObject);
+procedure TFormMain.FormDestroy(Sender: TObject);
 begin
   Bitmap.Free;
 end;
 
-procedure TForm1.FormDragDrop(Sender, Source: TObject; X, Y: Integer);
+procedure TFormMain.FormDragDrop(Sender, Source: TObject; X, Y: Integer);
 begin
   ShowMessage(Format('X: %u, Y: %u', [X, Y]));
 end;
 
-procedure TForm1.ImageMouseDown(Sender: TObject; Button: TMouseButton;
+procedure TFormMain.FormResize(Sender: TObject);
+begin
+  LabeledEditX.Top := Self.Height - 70;
+  LabeledEditY.Top := Self.Height - 70;
+  LabeledEditColor.Top := Self.Height - 70;
+  ShapeColor.Top := Self.Height - 70;
+  MemoJSON.Top := Self.Height - 70;
+  ButtonLoad.Top := Self.Height - 70;
+  Image.Width := Self.Width - 30;
+  Image.Height := Self.Height - 85;
+end;
+
+procedure TFormMain.ImageMouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 var
   RelativeX, RelativeY: Real;
@@ -95,19 +106,19 @@ begin
   RelativeY := Y / Image.Picture.Height;
   LabeledEditX.Text := Format('%.3f', [RelativeX]);
   LabeledEditY.Text := Format('%.3f', [RelativeY]);
-  MemoJSON.Text := Format('[{"X": %.3f, "Y": %.3f}]', [RelativeX, RelativeY]);
+  MemoJSON.Text := Format('{"X": %.3f, "Y": %.3f}', [RelativeX, RelativeY]);
   Color := ColorToRGB(Bitmap.Canvas.Pixels[X, Y]);
   LabeledEditColor.Text := Copy(RGBToWebColorStr(Color), 2, 6);
   ShapeColor.Brush.Color := Color;
 end;
 
-procedure TForm1.ImageMouseLeave(Sender: TObject);
+procedure TFormMain.ImageMouseLeave(Sender: TObject);
 begin
   Moving := False;
   Image.Cursor := crCross;
 end;
 
-procedure TForm1.ImageMouseUp(Sender: TObject; Button: TMouseButton;
+procedure TFormMain.ImageMouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 var
   PNGImage: TPngImage;
