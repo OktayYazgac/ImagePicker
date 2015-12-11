@@ -32,7 +32,6 @@ type
     procedure FormResize(Sender: TObject);
     procedure WMDROPFILES(var Message: TWMDROPFILES); message WM_DROPFILES;
     procedure LoadImage(FileName: TFileName);
-    function HEXToColor(ColorStr: string): TColor;
     procedure CalculateDistance(Color1, Color2: TColor);
   private
     { Private declarations }
@@ -50,11 +49,6 @@ var
 implementation
 
 {$R *.dfm}
-
-function TFormMain.HEXToColor(ColorStr: string): TColor;
-begin
-  // res
-end;
 
 procedure TFormMain.CalculateDistance(Color1: TColor; Color2: TColor);
 var
@@ -141,6 +135,7 @@ procedure TFormMain.ImageMouseDown(Sender: TObject; Button: TMouseButton;
 var
   RelativeX, RelativeY: Real;
   Color: Integer;
+  PNGImage: TPngImage;
 begin
   if not Assigned(Image.Picture.Graphic) then Exit;
   if (X > Image.Picture.Width) or (Y > Image.Picture.Height) then Exit;
@@ -166,6 +161,10 @@ begin
     LabeledEditColor.Text := UpperCase(Format('%.2x%.2x%.2x', [GetRValue(Color),
     GetGValue(Color), GetBValue(Color)]));
     ShapeColor.Brush.Color := Color;
+    PNGImage := (Image.Picture.Graphic as TPngImage);
+    PNGImage.Canvas.Brush.Color := clWhite;
+    PNGImage.Canvas.Ellipse(LastX - 2, LastY - 2, LastX + 2, LastY + 2);
+    Image.Refresh;
   end;
   try
     CalculateDistance(WebColorStrToColor(LabeledEditRefColor.Text),
