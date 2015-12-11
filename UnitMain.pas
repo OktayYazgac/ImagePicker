@@ -17,6 +17,9 @@ type
     MemoJSON: TMemo;
     ButtonLoad: TButton;
     ShapeColor: TShape;
+    LabeledEditRefColor: TLabeledEdit;
+    LabelDistance: TLabel;
+    ShapeRefColor: TShape;
     procedure FormDragDrop(Sender, Source: TObject; X, Y: Integer);
     procedure ButtonLoadClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -29,6 +32,8 @@ type
     procedure FormResize(Sender: TObject);
     procedure WMDROPFILES(var Message: TWMDROPFILES); message WM_DROPFILES;
     procedure LoadImage(FileName: TFileName);
+    function HEXToColor(ColorStr: string): TColor;
+    procedure CalculateDistance(Color1, Color2: TColor);
   private
     { Private declarations }
     Bitmap: TBitmap;
@@ -46,6 +51,23 @@ implementation
 
 {$R *.dfm}
 
+function TFormMain.HEXToColor(ColorStr: string): TColor;
+begin
+  // res
+end;
+
+procedure TFormMain.CalculateDistance(Color1: TColor; Color2: TColor);
+var
+  RGB1, RGB2: Longint;
+begin
+  RGB1 := ColorToRGB(Color1);
+  RGB2 := ColorTORGB(Color2);
+  LabelDistance.Caption := Format('%.1f', [Sqrt(
+    Power(GetRValue(RGB1) - GetRValue(RGB2), 2) +
+    Power(GetGValue(RGB1) - GetGValue(RGB2), 2) +
+    Power(GetBValue(RGB1) - GetBValue(RGB2), 2))]);
+end;
+
 procedure TFormMain.WMDROPFILES(var Message: TWMDROPFILES);
 var
   Index: Integer;
@@ -55,7 +77,7 @@ begin
   for Index := 0 to Max(1, Index - 1) do begin
     DragQueryFile(Message.Drop, Index, Buffer, SizeOf(Buffer));
     LoadImage(Buffer);
-  end;  
+  end;
   DragFinish(Message.Drop);
 end;
 
@@ -105,8 +127,11 @@ begin
   LabeledEditY.Top := Self.Height - 70;
   LabeledEditColor.Top := Self.Height - 70;
   ShapeColor.Top := Self.Height - 70;
+  ShapeRefColor.Top := Self.Height - 70;
   MemoJSON.Top := Self.Height - 70;
   ButtonLoad.Top := Self.Height - 70;
+  LabeledEditRefColor.Top := Self.Height - 70;
+  LabelDistance.Top := Self.Height - 65;
   Image.Width := Self.Width - 30;
   Image.Height := Self.Height - 85;
 end;
@@ -125,14 +150,29 @@ begin
   LastY := Y;
   X := X - OffsetX;
   Y := Y - OffsetY;
-  RelativeX := X / Image.Picture.Width;
-  RelativeY := Y / Image.Picture.Height;
-  LabeledEditX.Text := Format('%.3f', [RelativeX]);
-  LabeledEditY.Text := Format('%.3f', [RelativeY]);
-  MemoJSON.Text := Format('{"X": %.3f, "Y": %.3f}', [RelativeX, RelativeY]);
-  Color := ColorToRGB(Bitmap.Canvas.Pixels[X, Y]);
-  LabeledEditColor.Text := Copy(RGBToWebColorStr(Color), 2, 6);
-  ShapeColor.Brush.Color := Color;
+  if Button = mbRight then begin
+    Color := ColorToRGB(Bitmap.Canvas.Pixels[X, Y]);
+    ShapeRefColor.Brush.Color := Color;
+    LabeledEditRefColor.Text := UpperCase(Format('%.2x%.2x%.2x', [GetRValue(Color),
+    GetGValue(Color), GetBValue(Color)]));
+  end
+  else begin
+    RelativeX := X / Image.Picture.Width;
+    RelativeY := Y / Image.Picture.Height;
+    LabeledEditX.Text := Format('%.3f', [RelativeX]);
+    LabeledEditY.Text := Format('%.3f', [RelativeY]);
+    MemoJSON.Text := Format('{"X": %.3f, "Y": %.3f}', [RelativeX, RelativeY]);
+    Color := ColorToRGB(Bitmap.Canvas.Pixels[X, Y]);
+    LabeledEditColor.Text := UpperCase(Format('%.2x%.2x%.2x', [GetRValue(Color),
+    GetGValue(Color), GetBValue(Color)]));
+    ShapeColor.Brush.Color := Color;
+  end;
+  try
+    CalculateDistance(WebColorStrToColor(LabeledEditRefColor.Text),
+    WebColorStrToColor(LabeledEditColor.Text));
+  except
+    LabelDistance.Caption := '-';
+  end;
 end;
 
 procedure TFormMain.ImageMouseLeave(Sender: TObject);

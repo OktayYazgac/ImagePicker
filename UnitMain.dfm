@@ -7,6 +7,7 @@ object FormMain: TFormMain
   Color = clBtnFace
   Constraints.MinHeight = 550
   Constraints.MinWidth = 900
+  DoubleBuffered = True
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
@@ -30,7 +31,19 @@ object FormMain: TFormMain
     OnMouseUp = ImageMouseUp
   end
   object ShapeColor: TShape
-    Left = 462
+    Left = 565
+    Top = 480
+    Width = 27
+    Height = 23
+  end
+  object LabelDistance: TLabel
+    Left = 760
+    Top = 485
+    Width = 3
+    Height = 13
+  end
+  object ShapeRefColor: TShape
+    Left = 717
     Top = 480
     Width = 27
     Height = 23
@@ -38,44 +51,44 @@ object FormMain: TFormMain
   object LabeledEditX: TLabeledEdit
     Left = 65
     Top = 480
-    Width = 121
+    Width = 80
     Height = 21
     EditLabel.Width = 6
     EditLabel.Height = 13
-    EditLabel.Caption = 'X'
+    EditLabel.Caption = '&X'
     LabelPosition = lpLeft
     ReadOnly = True
     TabOrder = 0
   end
   object LabeledEditY: TLabeledEdit
-    Left = 208
-    Top = 480
-    Width = 121
+    Left = 168
+    Top = 479
+    Width = 80
     Height = 21
     EditLabel.Width = 6
     EditLabel.Height = 13
-    EditLabel.Caption = 'Y'
+    EditLabel.Caption = '&Y'
     LabelPosition = lpLeft
     ReadOnly = True
     TabOrder = 1
   end
   object LabeledEditColor: TLabeledEdit
-    Left = 343
-    Top = 480
-    Width = 113
+    Left = 479
+    Top = 479
+    Width = 80
     Height = 21
     EditLabel.Width = 7
     EditLabel.Height = 13
-    EditLabel.Caption = 'C'
+    EditLabel.Caption = '&C'
     LabelPosition = lpLeft
     ReadOnly = True
     TabOrder = 2
   end
   object MemoJSON: TMemo
-    Left = 552
+    Left = 264
     Top = 480
     Width = 191
-    Height = 25
+    Height = 21
     ReadOnly = True
     TabOrder = 3
   end
@@ -87,6 +100,18 @@ object FormMain: TFormMain
     Caption = '&Open'
     TabOrder = 4
     OnClick = ButtonLoadClick
+  end
+  object LabeledEditRefColor: TLabeledEdit
+    Left = 631
+    Top = 480
+    Width = 80
+    Height = 21
+    EditLabel.Width = 24
+    EditLabel.Height = 13
+    EditLabel.Caption = '&RefC'
+    LabelPosition = lpLeft
+    TabOrder = 5
+    Text = '000000'
   end
   object FileOpenDialog: TFileOpenDialog
     FavoriteLinks = <>
