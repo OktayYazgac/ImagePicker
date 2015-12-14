@@ -154,9 +154,9 @@ begin
   else begin
     RelativeX := X / Image.Picture.Width;
     RelativeY := Y / Image.Picture.Height;
-    LabeledEditX.Text := Format('%.3f', [RelativeX]);
-    LabeledEditY.Text := Format('%.3f', [RelativeY]);
-    MemoJSON.Text := Format('{"X": %.3f, "Y": %.3f}', [RelativeX, RelativeY]);
+    LabeledEditX.Text := Format('%.4f', [RelativeX]);
+    LabeledEditY.Text := Format('%.4f', [RelativeY]);
+    MemoJSON.Text := Format('{"X": %.4f, "Y": %.4f}', [RelativeX, RelativeY]);
     Color := ColorToRGB(Bitmap.Canvas.Pixels[X, Y]);
     LabeledEditColor.Text := UpperCase(Format('%.2x%.2x%.2x', [GetRValue(Color),
     GetGValue(Color), GetBValue(Color)]));
