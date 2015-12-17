@@ -12,3 +12,7 @@ It render a PNG file in full size and tell you what your script cares about.
 ## Todo
 - Keep previous clicked points after drag canvas, yes, they get lost after re-paint now
 - More customizable, if needed anyway
+
+## Compiler
+Delphi XE7 Win64
+No 3rd-party libraies needed
